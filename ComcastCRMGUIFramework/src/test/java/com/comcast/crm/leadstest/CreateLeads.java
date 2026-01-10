@@ -1,0 +1,74 @@
+package com.comcast.crm.leadstest;
+
+	import org.openqa.selenium.By;
+	import org.openqa.selenium.WebDriver;
+
+import com.comcast.crm.generic.excelutility.ExcelUtility;
+import com.comcast.crm.generic.fileutility.FileUtility;
+import com.comcast.crm.generic.javautility.JavaUtility;
+import com.comcast.crm.generic.webdriverutility.WebdriverUtility;
+
+	public class CreateLeads {
+	public static void main(String[] args) throws Exception {
+		FileUtility flib=new FileUtility();
+		JavaUtility jlib=new JavaUtility();
+		WebdriverUtility wlib=new WebdriverUtility();
+		ExcelUtility elib=new ExcelUtility();
+		
+		String browser=flib.getDataFromPropertiesFile("browser");
+		String url=flib.getDataFromPropertiesFile("url");
+		String username=flib.getDataFromPropertiesFile("username");
+		String password=flib.getDataFromPropertiesFile("password");
+		
+		//testscript
+		String lastname=elib.getStringData("leads", 1, 2)+jlib.getRandomNumber();
+		String company=elib.getStringData("leads", 1, 3)+jlib.getRandomNumber();
+		
+		
+		WebDriver driver=wlib.driverSelect(browser);
+		wlib.waitForPageLoad(driver);
+		driver.get(url);
+		
+		//step 1 : login
+		driver.findElement(By.name("user_name")).sendKeys(username);
+		driver.findElement(By.name("user_password")).sendKeys(password);
+		driver.findElement(By.id("submitButton")).click();
+		System.out.println("Logged in");
+		
+		//navigate to leads
+		driver.findElement(By.linkText("Leads")).click();
+		
+		//click on creat lead
+		driver.findElement(By.xpath("//img[@alt='Create Lead...']")).click();
+		
+		//enter last name
+		driver.findElement(By.name("lastname")).sendKeys(lastname);
+		//enter company
+		driver.findElement(By.name("company")).sendKeys(company);
+		
+		//save
+		driver.findElement(By.xpath("//input[@title='Save [Alt+S]']")).click();
+		
+		//verify headerinfo last name and company
+				String lastnameprint=driver.findElement(By.id("dtlview_Last Name")).getText();
+				if(lastnameprint.contains(lastname)) {
+					System.out.println(lastname+"is created == PASS");
+				}
+				else {
+					System.out.println(lastname+"is not created == FAIL");
+				}
+				
+				String compnayprint=driver.findElement(By.id("dtlview_Company")).getText();
+				if(compnayprint.contains(company)) {
+					System.out.println(company+"is created == PASS");
+				}
+				else {
+					System.out.println(company+"is not created == FAIL");
+				}
+				
+				
+				
+				System.out.println(lastnameprint);
+				System.out.println(compnayprint);
+	}
+	}
